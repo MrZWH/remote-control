@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { ipcRenderer } from 'electron';
 // const { ipcRenderer } = window.require('electron');
+import './peer-puppet.js';
 
 function App() {
   const [remoteCode, setRemoteCode] = useState('');
   const [localCode, setLocalCode] = useState('');
+  // 0 未连接, 1已控制, 2被控制
   const [controlText, setControlText] = useState('');
 
   const login = async () => {
