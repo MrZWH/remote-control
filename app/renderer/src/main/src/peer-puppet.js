@@ -1,6 +1,6 @@
 // createAnswer
 // addstream
-import { desktopCapturer } from 'electron';
+import { desktopCapturer, ipcRenderer } from 'electron';
 
 async function getScreenStream() {
   const sources = await desktopCapturer.getSources({ types: ['screen'] });
@@ -35,7 +35,15 @@ const pc = new window.RTCPeerConnection({});
 // addIceCandidate
 pc.onicecandidate = function (e) {
   console.log('candidate', JSON.stringify(e.candidate));
+  if (e.candidate) {
+    ipcRenderer.send('forward', 'puppet-candidate', e.candidate);
+  }
 };
+
+ipcRenderer.on('candidate', (e, candidate) => {
+  addIceCandidate(candidate);
+});
+
 let candidates = [];
 async function addIceCandidate(candidate) {
   if (candidate) {
@@ -48,7 +56,13 @@ async function addIceCandidate(candidate) {
     candidates = [];
   }
 }
+
 window.addIceCandidate = addIceCandidate;
+
+ipcRenderer.on('offer', async (e, offer) => {
+  let answer = await createAnswer(offer);
+  ipcRenderer.send('forward', 'answer', { type: answer.type, sdp: answer.sdp });
+});
 
 async function createAnswer(offer) {
   let screenStream = await getScreenStream();
