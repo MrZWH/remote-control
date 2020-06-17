@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const EventEmitter = requier('events');
+const EventEmitter = require('events');
 const signal = new EventEmitter();
 
 const ws = new WebSocket('ws://127.0.0.1:8010');

@@ -3,15 +3,29 @@ const peer = new EventEmitter();
 
 const { ipcRenderer, desktopCapturer } = require('electron');
 
-peer.on('robot', (type, data) => {
-  if (type === 'mouse') {
-    data.screen = { width: window.screen.width, height: window.screen.height };
-  }
+// peer.on('robot', (type, data) => {
+//   if (type === 'mouse') {
+//     data.screen = { width: window.screen.width, height: window.screen.height };
+//   }
 
-  ipcRenderer.send('robot', type, data);
-});
+//   ipcRenderer.send('robot', type, data);
+// });
 
 const pc = new window.RTCPeerConnection({});
+const dc = pc.createDataChannel('robotchannel', { reliable: false });
+dc.onopen = function () {
+  peer.on('robot', (type, data) => {
+    dc.send(JSON.stringify({ type, data }));
+  });
+};
+dc.onmessage = function (event) {
+  // 接收消息
+  console.log('received:' + event.data);
+};
+
+dc.onerror = (e) => {
+  console.log('error', e);
+};
 
 // onicecandidate iceEvent
 // addIceCandidate
