@@ -12,8 +12,9 @@
   },
   "scripts": {
     "start": "cross-env BROWSER=none react-app-rewired start",
-    "build": "react-scripts build",
+    "build": "react-app-rewired build",
     "test": "react-scripts test",
+    "postbuild": "node ./build.js",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -31,9 +32,11 @@
       "last 1 safari version"
     ]
   },
+  "homepage": "./",
   "devDependencies": {
     "cross-env": "^7.0.2",
     "customize-cra": "^1.0.0",
+    "fs-extra": "^9.0.1",
     "react-app-rewired": "^2.1.6"
   }
 }
