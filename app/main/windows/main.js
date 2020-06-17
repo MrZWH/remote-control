@@ -3,6 +3,7 @@ const isDev = require('electron-is-dev');
 const path = require('path');
 
 let win;
+let willQuitApp = false;
 function create() {
   win = new BrowserWindow({
     width: 600,
@@ -10,6 +11,15 @@ function create() {
     webPreferences: {
       nodeIntegration: true,
     },
+  });
+
+  win.on('close', (e) => {
+    if (willQuitApp) {
+      win = null;
+    } else {
+      e.preventDefault();
+      win.hide();
+    }
   });
 
   if (isDev) {
@@ -25,4 +35,13 @@ function send(channel, ...args) {
   win.webContents.send(channel, ...args);
 }
 
-module.exports = { create, send };
+function show() {
+  win.show();
+}
+
+function close() {
+  willQuitApp = true;
+  win.close();
+}
+
+module.exports = { create, send, show, close };

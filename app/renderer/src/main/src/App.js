@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 // const { ipcRenderer } = window.require('electron');
 import './peer-puppet.js';
+const { Menu, MenuItem } = remote;
 
 function App() {
   const [remoteCode, setRemoteCode] = useState('');
@@ -39,11 +40,27 @@ function App() {
     setControlText(text);
   };
 
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    const menu = new Menu();
+    menu.append(
+      new MenuItem({
+        label: '复制',
+        role: 'copy',
+      })
+    );
+
+    menu.popup();
+  };
+
   return (
     <div className='App'>
       {controlText === '' ? (
         <>
-          <div>你的控制码{localCode}</div>
+          <div>
+            你的控制码
+            <span onContextMenu={(e) => handleContextMenu(e)}>{localCode}</span>
+          </div>
           <input
             type='text'
             value={remoteCode}
